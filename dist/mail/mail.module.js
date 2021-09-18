@@ -12,32 +12,35 @@ const mailer_1 = require("@nestjs-modules/mailer");
 const path_1 = require("path");
 const handlebars_adapter_1 = require("@nestjs-modules/mailer/dist/adapters/handlebars.adapter");
 const mail_service_1 = require("./mail.service");
+const config_1 = require("@nestjs/config");
 let MailModule = class MailModule {
 };
 MailModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            mailer_1.MailerModule.forRoot({
-                transport: {
-                    host: 'smtp.gmail.com',
-                    port: 465,
-                    secure: true,
-                    auth: {
-                        user: 'elasticsearch22101995@gmail.com',
-                        pass: 'dangduy2210',
+            mailer_1.MailerModule.forRootAsync({
+                useFactory: async (config) => ({
+                    transport: {
+                        host: config.get('MAIL_HOST'),
+                        secure: false,
+                        auth: {
+                            user: config.get('MAIL_USER'),
+                            pass: config.get('MAIL_PASSWORD'),
+                        },
                     },
-                },
-                defaults: {
-                    from: '"No Reply" <noreply@example.com>',
-                },
-                template: {
-                    dir: (0, path_1.join)(__dirname, 'templates'),
-                    adapter: new handlebars_adapter_1.HandlebarsAdapter(),
-                    options: {
-                        strict: true,
+                    defaults: {
+                        from: `"No Reply" <${config.get('MAIL_FROM')}>`,
                     },
-                },
-            }),
+                    template: {
+                        dir: (0, path_1.join)(__dirname, 'templates'),
+                        adapter: new handlebars_adapter_1.HandlebarsAdapter(),
+                        options: {
+                            strict: true,
+                        },
+                    },
+                }),
+                inject: [config_1.ConfigService],
+            })
         ],
         controllers: [],
         providers: [mail_service_1.MailService],
