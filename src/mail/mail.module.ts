@@ -1,4 +1,3 @@
-import { MailController } from './mail.controller';
 import { Module } from '@nestjs/common';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { join } from 'path';
@@ -32,7 +31,8 @@ import { MailService } from './mail.service';
       },
     }),
   ],
-  controllers: [MailController],
+  controllers: [],
   providers: [MailService],
+  exports: [MailService]
 })
 export class MailModule {}
